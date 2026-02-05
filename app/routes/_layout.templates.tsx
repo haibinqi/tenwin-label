@@ -9,6 +9,11 @@ interface LoaderData {
 }
 
 export async function loader({ context }: LoaderFunctionArgs): Promise<LoaderData> {
+  // 预渲染时可能没有数据库上下文
+  if (!(context as { DB?: D1Database }).DB) {
+    return { templates: [] };
+  }
+  
   const db = getDB(context as { DB: D1Database });
   const templates = await db.getTemplates();
   return { templates };

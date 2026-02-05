@@ -3,6 +3,11 @@ import type { LoaderFunctionArgs } from "react-router";
 import { getDB } from "~/utils/db";
 
 export async function loader({ context }: LoaderFunctionArgs) {
+  // 预渲染时可能没有数据库上下文
+  if (!(context as { DB?: D1Database }).DB) {
+    return { todayCount: 0, activeBatches: 0, templateCount: 0 };
+  }
+  
   const db = getDB(context as { DB: D1Database });
   
   const [todayCount, activeBatches, templateCount] = await Promise.all([

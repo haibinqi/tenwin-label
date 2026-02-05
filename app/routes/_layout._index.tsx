@@ -11,6 +11,11 @@ interface LoaderData {
 }
 
 export async function loader({ context }: LoaderFunctionArgs): Promise<LoaderData> {
+  // 预渲染时可能没有数据库上下文
+  if (!(context as { DB?: D1Database }).DB) {
+    return { todayCount: 0, activeBatches: 0, templateCount: 0, recentBatches: [] };
+  }
+  
   const db = getDB(context as { DB: D1Database });
   
   const [todayCount, activeBatches, templateCount, recentBatches] = await Promise.all([
