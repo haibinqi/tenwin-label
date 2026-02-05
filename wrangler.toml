@@ -14,7 +14,7 @@ pages_build_output_dir = "./build/client"
 binding = "DB"
 database_name = "tenwin-label-db"
 # 部署后使用: wrangler d1 create tenwin-label-db 获取真实 ID
-database_id = "00000000-0000-0000-0000-000000000000"
+database_id = "9b039e2f-879a-47b0-b091-9a2747569934"
 
 # KV Namespace - 用于缓存
 [[kv_namespaces]]
