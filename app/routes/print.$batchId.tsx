@@ -12,6 +12,11 @@ interface LoaderData {
 }
 
 export async function loader({ params, context }: LoaderFunctionArgs): Promise<LoaderData> {
+  // 预渲染时可能没有数据库上下文
+  if (!(context as { DB?: D1Database }).DB) {
+    throw new Response("数据库不可用", { status: 503 });
+  }
+  
   const db = getDB(context as { DB: D1Database });
   const batchId = params.batchId as string;
   

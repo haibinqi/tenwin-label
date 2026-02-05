@@ -20,6 +20,11 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<LoaderDat
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {
+  // 预渲染时可能没有数据库上下文，返回空响应
+  if (!(context as { DB?: D1Database }).DB) {
+    return null;
+  }
+  
   const db = getDB(context as { DB: D1Database });
   const formData = await request.formData();
   const intent = formData.get("intent") as string;
