@@ -20,36 +20,41 @@ export async function loader({ context }: LoaderFunctionArgs): Promise<LoaderDat
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {
-  // 预渲染时可能没有数据库上下文，返回空响应
-  if (!(context as { DB?: D1Database }).DB) {
-    return null;
-  }
-  
-  const db = getDB(context as { DB: D1Database });
-  const formData = await request.formData();
-  const intent = formData.get("intent") as string;
-
-  if (intent === "create" || intent === "update") {
-    const template = {
-      id: (formData.get("id") as string) || Date.now().toString(),
-      name: formData.get("name") as string,
-      type: formData.get("type") as "一维码" | "二维码",
-      prefix: formData.get("prefix") as string,
-      padding_length: parseInt(formData.get("padding_length") as string) || 5,
-      remark: formData.get("remark") as string,
-    };
-
-    if (intent === "create") {
-      await db.createTemplate(template);
-    } else {
-      await db.updateTemplate(template.id, template);
+  try {
+    // 检查数据库上下文
+    if (!(context as { DB?: D1Database }).DB) {
+      return Response.json({ error: "数据库未配置，请在 Cloudflare 控制台创建 D1 数据库" }, { status: 500 });
     }
-  } else if (intent === "delete") {
-    const id = formData.get("id") as string;
-    await db.deleteTemplate(id);
-  }
+    
+    const db = getDB(context as { DB: D1Database });
+    const formData = await request.formData();
+    const intent = formData.get("intent") as string;
 
-  return null;
+    if (intent === "create" || intent === "update") {
+      const template = {
+        id: (formData.get("id") as string) || Date.now().toString(),
+        name: formData.get("name") as string,
+        type: formData.get("type") as "一维码" | "二维码",
+        prefix: formData.get("prefix") as string,
+        padding_length: parseInt(formData.get("padding_length") as string) || 5,
+        remark: formData.get("remark") as string,
+      };
+
+      if (intent === "create") {
+        await db.createTemplate(template);
+      } else {
+        await db.updateTemplate(template.id, template);
+      }
+    } else if (intent === "delete") {
+      const id = formData.get("id") as string;
+      await db.deleteTemplate(id);
+    }
+
+    return Response.json({ success: true });
+  } catch (error) {
+    console.error("Action error:", error);
+    return Response.json({ error: error instanceof Error ? error.message : "操作失败" }, { status: 500 });
+  }
 }
 
 export default function Templates() {
