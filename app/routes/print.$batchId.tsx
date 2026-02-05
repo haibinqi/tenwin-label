@@ -106,7 +106,6 @@ export default function PrintPreview() {
           }
           await QRCode.toCanvas(canvas, item.code_text, {
             width: 48,
-            height: 48,
             margin: 0,
             errorCorrectionLevel: 'M',
           });

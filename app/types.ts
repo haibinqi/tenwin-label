@@ -31,8 +31,8 @@ export interface CodeItem {
   batch_id: string;
   serial_number: number;
   code_text: string;
-  is_printed: number;
-  printed_at: string | null;
+  is_printed?: number;
+  printed_at?: string | null;
 }
 
 // API Response types
