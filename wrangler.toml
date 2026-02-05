@@ -1,0 +1,27 @@
+name = "tenwin-label"
+main = "./build/worker/index.js"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database - 需要先创建数据库然后更新 ID
+[[d1_databases]]
+binding = "DB"
+database_name = "tenwin-label-db"
+# 部署后使用: wrangler d1 create tenwin-label-db 获取真实 ID
+database_id = "00000000-0000-0000-0000-000000000000"
+
+# KV Namespace - 用于缓存
+[[kv_namespaces]]
+binding = "CACHE"
+# 部署后使用: wrangler kv:namespace create "CACHE" 获取真实 ID
+id = "9b039e2f-879a-47b0-b091-9a2747569934"
+
+[build]
+command = "npm run build"
+
+[site]
+bucket = "./build/client"
+
+# 环境变量
+[vars]
+NODE_ENV = "production"
