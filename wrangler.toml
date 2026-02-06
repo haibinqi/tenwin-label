@@ -5,9 +5,6 @@ compatibility_flags = ["nodejs_compat"]
 # Pages output directory - 构建输出目录
 pages_build_output_dir = "./build/client"
 
-# Worker entry point for SSR
-main = "./build/server/index.js"
-
 # D1 Database
 [[d1_databases]]
 binding = "DB"
