@@ -9,14 +9,20 @@ interface LoaderData {
 }
 
 export async function loader({ context }: LoaderFunctionArgs): Promise<LoaderData> {
-  // 预渲染时可能没有数据库上下文
-  if (!(context as { DB?: D1Database }).DB) {
+  try {
+    // 检查数据库上下文
+    if (!(context as { DB?: D1Database }).DB) {
+      console.log("DB not available in context");
+      return { batches: [] };
+    }
+    
+    const db = getDB(context as { DB: D1Database });
+    const batches = await db.getBatches(100);
+    return { batches };
+  } catch (error) {
+    console.error("Loader error:", error);
     return { batches: [] };
   }
-  
-  const db = getDB(context as { DB: D1Database });
-  const batches = await db.getBatches(100);
-  return { batches };
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {

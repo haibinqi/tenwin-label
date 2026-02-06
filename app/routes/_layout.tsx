@@ -3,20 +3,26 @@ import type { LoaderFunctionArgs } from "react-router";
 import { getDB } from "~/utils/db";
 
 export async function loader({ context }: LoaderFunctionArgs) {
-  // 预渲染时可能没有数据库上下文
-  if (!(context as { DB?: D1Database }).DB) {
+  try {
+    // 检查数据库上下文
+    if (!(context as { DB?: D1Database }).DB) {
+      console.log("DB not available in context");
+      return { todayCount: 0, activeBatches: 0, templateCount: 0 };
+    }
+    
+    const db = getDB(context as { DB: D1Database });
+    
+    const [todayCount, activeBatches, templateCount] = await Promise.all([
+      db.getTodayCount(),
+      db.getActiveBatchCount(),
+      db.getTemplateCount(),
+    ]);
+    
+    return { todayCount, activeBatches, templateCount };
+  } catch (error) {
+    console.error("Loader error:", error);
     return { todayCount: 0, activeBatches: 0, templateCount: 0 };
   }
-  
-  const db = getDB(context as { DB: D1Database });
-  
-  const [todayCount, activeBatches, templateCount] = await Promise.all([
-    db.getTodayCount(),
-    db.getActiveBatchCount(),
-    db.getTemplateCount(),
-  ]);
-  
-  return { todayCount, activeBatches, templateCount };
 }
 
 export default function Layout() {

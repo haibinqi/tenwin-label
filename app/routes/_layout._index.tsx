@@ -11,21 +11,27 @@ interface LoaderData {
 }
 
 export async function loader({ context }: LoaderFunctionArgs): Promise<LoaderData> {
-  // 预渲染时可能没有数据库上下文
-  if (!(context as { DB?: D1Database }).DB) {
+  try {
+    // 检查数据库上下文
+    if (!(context as { DB?: D1Database }).DB) {
+      console.log("DB not available in context");
+      return { todayCount: 0, activeBatches: 0, templateCount: 0, recentBatches: [] };
+    }
+    
+    const db = getDB(context as { DB: D1Database });
+    
+    const [todayCount, activeBatches, templateCount, recentBatches] = await Promise.all([
+      db.getTodayCount(),
+      db.getActiveBatchCount(),
+      db.getTemplateCount(),
+      db.getBatches(5),
+    ]);
+    
+    return { todayCount, activeBatches, templateCount, recentBatches };
+  } catch (error) {
+    console.error("Loader error:", error);
     return { todayCount: 0, activeBatches: 0, templateCount: 0, recentBatches: [] };
   }
-  
-  const db = getDB(context as { DB: D1Database });
-  
-  const [todayCount, activeBatches, templateCount, recentBatches] = await Promise.all([
-    db.getTodayCount(),
-    db.getActiveBatchCount(),
-    db.getTemplateCount(),
-    db.getBatches(5),
-  ]);
-  
-  return { todayCount, activeBatches, templateCount, recentBatches };
 }
 
 export default function Dashboard() {
