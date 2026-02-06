@@ -6,5 +6,5 @@ export default {
   future: {
     v8_viteEnvironmentApi: true,
   },
-  prerender: true,
+  prerender: false, // Disable prerender to avoid data loading issues
 } satisfies Config;
