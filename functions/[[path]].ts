@@ -48,7 +48,7 @@ async function handleAction(request: Request, env: CloudflareEnvironment): Promi
   const url = new URL(request.url);
   const db = new Database(env.DB);
   
-  // Remove .data suffix for routing (React Router data requests)
+  // Remove .data suffix for routing
   const pathname = url.pathname.replace(/\.data$/, '');
   
   try {
@@ -88,7 +88,6 @@ async function handleAction(request: Request, env: CloudflareEnvironment): Promi
       }
     }
 
-    // Default: return success
     return Response.json({ success: true });
   } catch (error) {
     console.error("Action error:", error);
@@ -107,26 +106,14 @@ export default {
   ): Promise<Response> {
     const url = new URL(request.url);
     
-    try {
-      // Handle data requests (e.g., /templates.data)
-      if (url.pathname.endsWith(".data")) {
-        // Handle POST/PUT/DELETE requests (actions)
-        if (request.method !== "GET" && request.method !== "HEAD") {
-          return await handleAction(request, env);
-        }
-        
-        // For GET .data requests, return 404 to let Pages handle it
-        return new Response("Not found", { status: 404 });
-      }
-
-      // For all other requests, let Pages serve static content
-      return new Response("Not found", { status: 404 });
-    } catch (error) {
-      console.error("Worker error:", error);
-      return new Response(JSON.stringify({ error: String(error) }), { 
-        status: 500,
-        headers: { "Content-Type": "application/json" }
-      });
+    // Only handle POST/PUT/DELETE requests to .data endpoints
+    if (url.pathname.endsWith(".data") && 
+        request.method !== "GET" && 
+        request.method !== "HEAD") {
+      return await handleAction(request, env);
     }
+
+    // For all other requests, let Pages serve static content
+    return new Response("Not found", { status: 404 });
   },
 };
