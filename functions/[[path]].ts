@@ -108,8 +108,12 @@ export default {
     const url = new URL(request.url);
     
     try {
-      // Let static assets be served by Pages
-      if (url.pathname.startsWith("/assets/")) {
+      // Let static assets be served by Pages (return 404 to pass through)
+      if (url.pathname.startsWith("/assets/") || 
+          url.pathname === "/__manifest" ||
+          url.pathname.endsWith(".js") ||
+          url.pathname.endsWith(".css") ||
+          url.pathname.endsWith(".json")) {
         return new Response("Not found", { status: 404 });
       }
 
