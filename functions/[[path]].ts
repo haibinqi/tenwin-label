@@ -108,21 +108,18 @@ export default {
     const url = new URL(request.url);
     
     try {
-      // Let static assets be served by Pages (return 404 to pass through)
-      if (url.pathname.startsWith("/assets/") || 
-          url.pathname === "/__manifest" ||
-          url.pathname.endsWith(".js") ||
-          url.pathname.endsWith(".css") ||
-          url.pathname.endsWith(".json")) {
+      // Handle data requests (e.g., /templates.data)
+      if (url.pathname.endsWith(".data")) {
+        // Handle POST/PUT/DELETE requests (actions)
+        if (request.method !== "GET" && request.method !== "HEAD") {
+          return await handleAction(request, env);
+        }
+        
+        // For GET .data requests, return 404 to let Pages handle it
         return new Response("Not found", { status: 404 });
       }
 
-      // Handle POST/PUT/DELETE requests (actions)
-      if (request.method !== "GET" && request.method !== "HEAD") {
-        return await handleAction(request, env);
-      }
-
-      // For GET requests, let Pages serve the static HTML
+      // For all other requests, let Pages serve static content
       return new Response("Not found", { status: 404 });
     } catch (error) {
       console.error("Worker error:", error);
