@@ -111,7 +111,15 @@ export default {
     // Log request details for debugging
     console.log(`Request: ${method} ${url.pathname} -> ${pathname}`);
     
-    // Only handle POST/PUT/DELETE requests to .data endpoints
+    // Let manifest and data requests through to Pages
+    if (url.pathname === "/__manifest" || 
+        url.pathname === "/__manifest.js" ||
+        url.pathname.endsWith(".data")) {
+      console.log(`Passing to Pages: ${method} ${pathname}`);
+      return new Response("Not found", { status: 404 });
+    }
+
+    // Only handle POST/PUT/DELETE requests to .data endpoints (shouldn't reach here anymore)
     if (url.pathname.endsWith(".data") && 
         method !== "GET" && 
         method !== "HEAD") {
