@@ -48,12 +48,15 @@ async function handleAction(request: Request, env: CloudflareEnvironment): Promi
   const url = new URL(request.url);
   const db = new Database(env.DB);
   
+  // Remove .data suffix for routing (React Router data requests)
+  const pathname = url.pathname.replace(/\.data$/, '');
+  
   try {
     const formData = await request.formData();
     const intent = formData.get("intent") as string;
 
     // Handle template actions
-    if (url.pathname === "/templates") {
+    if (pathname === "/templates") {
       if (intent === "create") {
         await db.createTemplate({
           id: Date.now().toString(),
@@ -63,7 +66,7 @@ async function handleAction(request: Request, env: CloudflareEnvironment): Promi
           padding_length: parseInt(formData.get("padding_length") as string) || 5,
           remark: formData.get("remark") as string || "",
         });
-        return new Response(null, { status: 302, headers: { "Location": "/templates" } });
+        return Response.json({ success: true });
       }
       
       if (intent === "update") {
@@ -75,24 +78,24 @@ async function handleAction(request: Request, env: CloudflareEnvironment): Promi
           padding_length: parseInt(formData.get("padding_length") as string) || 5,
           remark: formData.get("remark") as string || "",
         });
-        return new Response(null, { status: 302, headers: { "Location": "/templates" } });
+        return Response.json({ success: true });
       }
       
       if (intent === "delete") {
         const id = formData.get("id") as string;
         await db.deleteTemplate(id);
-        return new Response(null, { status: 302, headers: { "Location": "/templates" } });
+        return Response.json({ success: true });
       }
     }
 
-    // Default: redirect back
-    return new Response(null, { status: 302, headers: { "Location": url.pathname } });
+    // Default: return success
+    return Response.json({ success: true });
   } catch (error) {
     console.error("Action error:", error);
-    return new Response(JSON.stringify({ error: String(error) }), { 
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+    return Response.json(
+      { error: error instanceof Error ? error.message : String(error) }, 
+      { status: 500 }
+    );
   }
 }
 
