@@ -17,24 +17,24 @@
     "@react-router/node": "^7.13.0",
     "@react-router/serve": "^7.13.0",
     "@react-router/dev": "^7.13.0",
+    "@tailwindcss/vite": "^4.1.18",
     "isbot": "^5.1.17",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router": "^7.13.0",
     "jsbarcode": "^3.11.5",
-    "qrcode": "^1.5.3"
+    "qrcode": "^1.5.3",
+    "tailwindcss": "^4.1.18",
+    "vite": "^6.3.4",
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260205.0",
-    "@tailwindcss/vite": "^4.1.18",
     "@types/jsbarcode": "^3.11.4",
     "@types/node": "^20",
     "@types/qrcode": "^1.5.5",
     "@types/react": "^19.2.11",
     "@types/react-dom": "^19.2.3",
-    "tailwindcss": "^4.1.18",
-    "typescript": "^5.9.3",
-    "vite": "^6.3.4",
     "wrangler": "^4.62.0"
   }
 }
