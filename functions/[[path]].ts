@@ -105,15 +105,21 @@ export default {
     ctx: ExecutionContext
   ): Promise<Response> {
     const url = new URL(request.url);
+    const pathname = url.pathname.replace(/\.data$/, '');
+    const method = request.method;
+
+    // Log request details for debugging
+    console.log(`Request: ${method} ${url.pathname} -> ${pathname}`);
     
     // Only handle POST/PUT/DELETE requests to .data endpoints
     if (url.pathname.endsWith(".data") && 
-        request.method !== "GET" && 
-        request.method !== "HEAD") {
+        method !== "GET" && 
+        method !== "HEAD") {
       return await handleAction(request, env);
     }
 
     // For all other requests, let Pages serve static content
+    console.log(`Passing to Pages: ${method} ${pathname}`);
     return new Response("Not found", { status: 404 });
   },
 };
